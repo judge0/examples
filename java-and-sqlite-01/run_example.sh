@@ -19,7 +19,7 @@ function create_submission() {
          --no-silent \
          -X POST \
          -H "Content-Type: application/json" \
-         -H "X-RapidAPI-Key: $RAPIDAPI_JUDGE0_CE_KEY" \
+         -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
          -H "X-RapidAPI-Host: judge0-ce.p.rapidapi.com" \
          --data @request_body.json \
          --output request_response.json \
@@ -29,7 +29,7 @@ function create_submission() {
 
 function get_submission() {
     curl -H "Accept: application/json" \
-         -H "X-RapidAPI-Key: $RAPIDAPI_JUDGE0_CE_KEY" \
+         -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
          -H "X-RapidAPI-Host: judge0-ce.p.rapidapi.com" \
          "https://judge0-ce.p.rapidapi.com/submissions/$1?fileds=$2"
 }
