@@ -4,9 +4,8 @@ source ../.env
 function generate_request_body() {
     cat << EOF
 {
-    "source_code": "",
-    "language_id": 89,
-    "additional_files": "$(zip -j -r - additional_files/* | base64 -w0 -)"
+    "source_code": "$(cat main.sh | base64 -w0 -)",
+    "language_id": 46
 }
 EOF
 }
