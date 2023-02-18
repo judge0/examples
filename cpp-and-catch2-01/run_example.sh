@@ -23,7 +23,7 @@ function create_submission() {
          -H "X-RapidAPI-Host: judge0-ce.p.rapidapi.com" \
          --data @request_body.json \
          --output request_response.json \
-         "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false"
+         "$JUDGE0_CE_BASE_URL/submissions?base64_encoded=true&wait=false"
     cat request_response.json
 }
 
