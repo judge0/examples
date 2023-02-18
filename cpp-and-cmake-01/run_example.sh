@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 source ../.env
 
 function generate_request_body() {
@@ -6,7 +6,7 @@ function generate_request_body() {
 {
     "source_code": "",
     "language_id": 89,
-    "additional_files": "$(cd additional_files; zip -r - . | base64 -w0 -)"
+    "additional_files": "$(cd additional_files; zip -r - . | $JUDGE0_BASE64_CMD -w0 -)"
 }
 EOF
 }
@@ -59,4 +59,4 @@ echo "[$(date)] Received submission:"
 echo "$submission_json" | jq
 
 echo "[$(date)] Base64 decoded stdout:"
-echo "$submission_json" | jq -r ".stdout" | base64 -d -
+echo "$submission_json" | jq -r ".stdout" | $JUDGE0_BASE64_CMD -d -

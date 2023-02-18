@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 source ../.env
 
 function generate_request_body() {
     cat << EOF
 {
-    "source_code": "$(cat script.ts | base64 -w0 -)",
-    "stdin": "$(cat stdin.txt | base64 -w0 -)",
+    "source_code": "$(cat script.ts | $JUDGE0_BASE64_CMD -w0 -)",
+    "stdin": "$(cat stdin.txt | $JUDGE0_BASE64_CMD -w0 -)",
     "language_id": 74,
-    "additional_files": "$(cd additional_files; zip -r - . | base64 -w0 -)"
+    "additional_files": "$(cd additional_files; zip -r - . | $JUDGE0_BASE64_CMD -w0 -)"
 }
 EOF
 }
@@ -60,4 +60,4 @@ echo "[$(date)] Received submission:"
 echo "$submission_json" | jq
 
 echo "[$(date)] Base64 decoded stdout:"
-echo "$submission_json" | jq -r ".stdout" | base64 -d -
+echo "$submission_json" | jq -r ".stdout" | $JUDGE0_BASE64_CMD -d -

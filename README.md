@@ -20,6 +20,7 @@ To successfully run these examples, you will need to:
 3. Clone this repository.
 4. Edit the file [`.env`](https://github.com/judge0/examples/blob/master/.env) and add the API key that [RapidAPI generated for you](https://docs.rapidapi.com/docs/keys).
 5. Make sure you have [`curl`](https://reqbin.com/Article/InstallCurl) and [`jq`](https://stedolan.github.io/jq/download/) installed.
+6. **macOS** Make sure you have `gbase64` in your `PATH`. It can be installed with `brew install coreutils`.
 
 ## Get Started
 

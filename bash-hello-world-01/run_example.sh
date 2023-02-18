@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 source ../.env
 
 function generate_request_body() {
     cat << EOF
 {
-    "source_code": "$(cat main.sh | base64 -w0 -)",
+    "source_code": "$(cat main.sh | $JUDGE0_BASE64_CMD -w0 -)",
     "language_id": 46
 }
 EOF
@@ -58,4 +58,4 @@ echo "[$(date)] Received submission:"
 echo "$submission_json" | jq
 
 echo "[$(date)] Base64 decoded stdout:"
-echo "$submission_json" | jq -r ".stdout" | base64 -d -
+echo "$submission_json" | jq -r ".stdout" | $JUDGE0_BASE64_CMD -d -
