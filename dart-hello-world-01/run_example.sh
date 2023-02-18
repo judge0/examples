@@ -4,9 +4,8 @@ source ../.env
 function generate_request_body() {
     cat << EOF
 {
-    "source_code": "",
-    "language_id": 89,
-    "additional_files": "$(cd additional_files; zip -r - . | $JUDGE0_BASE64_CMD -w0 -)"
+    "source_code": "$(cat main.dart | $JUDGE0_BASE64_CMD -w0 -)",
+    "language_id": 90
 }
 EOF
 }
