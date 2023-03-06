@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/local/python-3.8.1/bin/python3 main.py
