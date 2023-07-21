@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html style="height: 100%; margin: 0;">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Compiler</title>
+</head>
+
+<body style="height: 100%; background-color: #eee; font-family: monospace; margin: 8px;" >
+    <h4>script.js</h4>
+    <textarea id="source-code-1" style="width: calc(50% - 16px); height: 20%; resize: vertical;">
+const greeter = require('./greeter');
+const adder = require('./adder');
+
+console.log(greeter.greeting());
+console.log(adder.add(10, 20));
+</textarea>
+
+    <h4 id="source-code-2-file-name">greeter.js</h4>
+<textarea id="source-code-2" style="width: calc(50% - 16px); height: 20%; resize: vertical;">
+module.exports = {
+    greeting: function() {
+        return "hello, world";
+    }
+};
+</textarea>
+
+    <h4 id="source-code-3-file-name">adder.js</h4>
+<textarea id="source-code-3" style="width: calc(50% - 16px); height: 20%; resize: vertical;">
+module.exports = {
+    add: function(a, b) {
+        return a + b;
+    }
+};
+</textarea>
+
+    </br></br>
+
+    <button id="run" onclick="run()">▶️ Run</button>
+
+    <textarea readonly id="output" style="width: 50%; height: 100%; position: fixed; top: 0; right: 0; resize: none;"></textarea>
+
+    <script type="text/javascript">
+        API_KEY = ""; // Get yours for free at https://judge0.com/ce or https://judge0.com/extra-ce
+
+        function encode(str) {
+            return btoa(unescape(encodeURIComponent(str || "")));
+        }
+
+        function decode(bytes) {
+            var escaped = escape(atob(bytes || ""));
+            try {
+                return decodeURIComponent(escaped);
+            } catch {
+                return unescape(escaped);
+            }
+        }
+
+        function errorHandler(jqXHR, textStatus, errorThrown) {
+            $("#output").val(`${JSON.stringify(jqXHR, null, 4)}`);
+            $("#run").prop("disabled", false);
+        }
+
+        function check(token) {
+            $("#output").val($("#output").val() + "\n⏬ Checking submission status...");
+            $.ajax({
+                url: `https://judge0-ce.p.rapidapi.com/submissions/${token}?base64_encoded=true`,
+                type: "GET",
+                headers: {
+                    "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+	                "x-rapidapi-key": API_KEY
+                },
+                success: function (data, textStatus, jqXHR) {
+                    if ([1, 2].includes(data["status"]["id"])) {
+                        $("#output").val($("#output").val() + "\nℹ️ Status: " + data["status"]["description"]);
+                        setTimeout(() => check(token), 1000);
+                    }
+                    else {
+                        var output = [decode(data["compile_output"]), decode(data["stdout"])].join("\n").trim();
+                        $("#output").val(`${data["status"]["id"] != "3" ? "🔴" : "🟢"} ${data["status"]["description"]}\n${output}`);
+                        $("#run").prop("disabled", false);
+                    }
+                },
+                error: errorHandler
+            });
+        }
+
+        function run() {
+            $("#run").prop("disabled", true);
+            $("#output").val("⚙️ Creating submission...");
+
+            let zip = new JSZip();
+            zip.file($("#source-code-2-file-name").text(), $("#source-code-2").val());
+            zip.file($("#source-code-3-file-name").text(), $("#source-code-3").val());
+
+            zip.generateAsync({type: "base64"}).then(function (zipContent) {
+                $.ajax({
+                    url: "https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false",
+                    type: "POST",
+                    contentType: "application/json",
+                    headers: {
+                        "x-rapidapi-host": "judge0-ce.p.rapidapi.com",
+                        "x-rapidapi-key": API_KEY
+                    },
+                    data: JSON.stringify({
+                        "language_id": "93", // https://ce.judge0.com/languages/93
+                        "source_code": encode($("#source-code-1").val()),
+                        "stdin": encode($("#input").val()),
+                        "additional_files": zipContent,
+                        "redirect_stderr_to_stdout": true // Optional, but recommended for simple use-cases.
+                    }),
+                    success: function(data, textStatus, jqXHR) {
+                        $("#output").val($("#output").val() + "\n🎉 Submission created.");
+                        setTimeout(() => check(data["token"]), 2000);
+                    },
+                    error: errorHandler
+                });
+            });
+        }
+    </script>
+</body>
+</html>
