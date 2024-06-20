@@ -1,0 +1,127 @@
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="jszip.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="background-color: #eee; font-family: monospace; margin: 8px;" >
+    <textarea id="source" style="width: calc(50% - 8px); height: 40%; resize: vertical;">
+import matplotlib.pyplot as plt
+
+# Define the circle
+circle = plt.Circle((0, 0), 1, edgecolor='b', facecolor='none')
+
+# Create a plot
+fig, ax = plt.subplots()
+ax.add_patch(circle)
+ax.set_aspect('equal', 'box')
+ax.set_xlim(-1.5, 1.5)
+ax.set_ylim(-1.5, 1.5)
+plt.title('Circle')
+plt.xlabel('X-axis')
+plt.ylabel('Y-axis')
+plt.grid(True)
+
+plt.savefig('image.png')
+
+print('hello, world')
+</textarea>
+
+    </br></br>
+
+    <button id="run" onclick="run()">Run</button>
+
+    <div id="output" style="width: 50%; height: 100%; position: fixed; top: 0; right: 0; resize: none; padding: 8px; background-color: white; box-sizing: border-box;"></div>
+
+    <script type="text/javascript">
+        API_KEY = ""; // Get yours for free at https://judge0.com/extra-ce
+
+        function encode(str) {
+            return btoa(unescape(encodeURIComponent(str || "")));
+        }
+
+        function decode(bytes) {
+            var escaped = escape(atob(bytes || ""));
+            try {
+                return decodeURIComponent(escaped);
+            } catch {
+                return unescape(escaped);
+            }
+        }
+
+        function errorHandler(jqXHR, textStatus, errorThrown) {
+            $("#output").html(`${JSON.stringify(jqXHR, null, 4)}`);
+            $("#run").prop("disabled", false);
+        }
+
+        function check(token) {
+            $("#output").html($("#output").html() + "<br>⏬ Checking submission status...");
+            $.ajax({
+                url: `https://judge0-extra-ce.p.rapidapi.com/submissions/${token}?base64_encoded=true&fields=*`,
+                type: "GET",
+                headers: {
+                    "x-rapidapi-host": "judge0-extra-ce.p.rapidapi.com",
+	                "x-rapidapi-key": API_KEY
+                },
+                success: function (data, textStatus, jqXHR) {
+                    if ([1, 2].includes(data["status"]["id"])) {
+                        $("#output").html($("#output").html() + "<br>ℹ️ Status: " + data["status"]["description"]);
+                        setTimeout(function() { check(token) }, 1000);
+                    }
+                    else {
+                        $("#output").html(`${data["status"]["id"] != "3" ? "🔴" : "🟢"} ${data["status"]["description"]}<br>${decode(data["stdout"])}<br>`);
+
+                        JSZip.loadAsync(decode(data["post_execution_filesystem"])).then(zip => {
+                            zip.file("image.png").async("base64").then(d => {
+                                $("#output").append($("<img>").attr("src", `data:image/png;base64,${d}`));
+                            });
+                        });
+
+                        $("#run").prop("disabled", false);
+                    }
+                },
+                error: errorHandler
+            });
+        }
+
+        function run() {
+            $("#run").prop("disabled", true);
+            $("#output").html("⚙️ Creating submission...");
+
+            $.ajax({
+                url: "https://judge0-extra-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false",
+                type: "POST",
+                contentType: "application/json",
+                headers: {
+                    "x-rapidapi-host": "judge0-extra-ce.p.rapidapi.com",
+                    "x-rapidapi-key": API_KEY
+                },
+                data: JSON.stringify({
+                    "source_code": encode($("#source").val()),
+                    "language_id": 25,
+                }),
+                success: function(data, textStatus, jqXHR) {
+                    $("#output").html($("#output").html() + "<br>🎉 Submission created.");
+                    setTimeout(function() { check(data["token"]) }, 2000);
+                },
+                error: errorHandler
+            });
+        }
+
+        $("textarea").keydown(function (e) {
+            if (e.keyCode == 9) {
+                e.preventDefault();
+                var start = this.selectionStart;
+                var end = this.selectionEnd;
+
+                var append = "    ";
+                $(this).val($(this).val().substring(0, start) + append + $(this).val().substring(end));
+
+                this.selectionStart = this.selectionEnd = start + append.length;
+            }
+        });
+
+        $("#source").focus();
+    </script>
+</body>
