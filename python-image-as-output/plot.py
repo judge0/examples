@@ -74,8 +74,7 @@ def run_script(script: str):
     # the user's script. It also reads the image.png and prints it to stderr.
     data = {
         "additional_files": create_zip({"script.py": script, "run.sh": RUN_SCRIPT}),
-        "language_id": 89,
-        "wall_time_limit": 10,
+        "language_id": 89
     }
 
     # Always send the data as base64 encoded with base64_encoded=true.
