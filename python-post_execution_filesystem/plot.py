@@ -6,12 +6,17 @@ import time
 
 
 RAPID_API_KEY = "" # Get yours at https://judge0.com/extra-ce
+SULU_API_KEY = "" # Get your at https://sparkhub.sulu.sh
 
-JUDGE0_API_BASE = "https://judge0-extra-ce.p.rapidapi.com"
+JUDGE0_API_BASE = "https://judge0-extra-ce.p.sulu.sh"
 RAPID_API_HEADERS = {
     "X-RapidAPI-Key": RAPID_API_KEY,
     "X-RapidAPI-Host": "judge0-extra-ce.p.rapidapi.com",
 }
+SULU_API_HEADERS = {
+    "Authorization": f"Bearer {SULU_API_KEY}"
+}
+
 JUDGE0_PENDING_STATUS_IDS = [1, 2]
 
 SCRIPT = f"""
@@ -46,7 +51,8 @@ def run_script(script: str):
     # Always send the data as base64 encoded with base64_encoded=true.
     res = requests.post(
         url=f"{JUDGE0_API_BASE}/submissions?base64_encoded=true",
-        headers=RAPID_API_HEADERS,
+        # headers=RAPID_API_HEADERS,
+        headers=SULU_API_HEADERS,
         json=data,
     )
 
@@ -56,7 +62,8 @@ def run_script(script: str):
 
         res = requests.get(
             url=f"{JUDGE0_API_BASE}/submissions/{token}?base64_encoded=true&fields=*",
-            headers=RAPID_API_HEADERS,
+            # headers=RAPID_API_HEADERS,
+            headers=SULU_API_HEADERS,
             timeout=1,
         )
 
