@@ -15,12 +15,15 @@ function create_submission() {
     echo "[$(date)] Generating request body..." 1>&2
     generate_request_body > request_body.json
     echo "[$(date)] Creating submission..." 1>&2
+
+    # Use these headers for RapidAPI
+    # -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
+    # -H "X-RapidAPI-Host: judge0-ce.p.rapidapi.com" \
     curl --progress-bar \
          --no-silent \
          -X POST \
          -H "Content-Type: application/json" \
-         -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
-         -H "X-RapidAPI-Host: judge0-extra-ce.p.rapidapi.com" \
+         -H "Authorization: Bearer $SULU_KEY" \
          --data @request_body.json \
          --output request_response.json \
          "$JUDGE0_EXTRA_CE_BASE_URL/submissions?base64_encoded=true&wait=false"
@@ -28,9 +31,11 @@ function create_submission() {
 }
 
 function get_submission() {
+    # Use these headers for RapidAPI
+    # -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
+    # -H "X-RapidAPI-Host: judge0-ce.p.rapidapi.com" \
     curl -H "Accept: application/json" \
-         -H "X-RapidAPI-Key: $RAPIDAPI_KEY" \
-         -H "X-RapidAPI-Host: judge0-extra-ce.p.rapidapi.com" \
+         -H "Authorization: Bearer $SULU_KEY" \
          "$JUDGE0_EXTRA_CE_BASE_URL/submissions/$1?base64_encoded=true&fields=$2"
 }
 

@@ -58,11 +58,10 @@ print('hello, world')
         function check(token) {
             $("#output").html($("#output").html() + "<br>⏬ Checking submission status...");
             $.ajax({
-                url: `https://judge0-extra-ce.p.rapidapi.com/submissions/${token}?base64_encoded=true`,
+                url: `https://judge0-extra-ce.p.sulu.sh/submissions/${token}?base64_encoded=true`,
                 type: "GET",
                 headers: {
-                    "x-rapidapi-host": "judge0-extra-ce.p.rapidapi.com",
-	                "x-rapidapi-key": API_KEY
+	                "authorization": `Bearer ${API_KEY}`
                 },
                 success: function (data, textStatus, jqXHR) {
                     if ([1, 2].includes(data["status"]["id"])) {
@@ -96,12 +95,11 @@ cat image.png | base64 -w0 1>&2
 
             zip.generateAsync({type: "base64"}).then(function(content) {
                 $.ajax({
-                    url: "https://judge0-extra-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=false",
+                    url: "https://judge0-extra-ce.p.sulu.sh/submissions?base64_encoded=true&wait=false",
                     type: "POST",
                     contentType: "application/json",
                     headers: {
-                        "x-rapidapi-host": "judge0-extra-ce.p.rapidapi.com",
-                        "x-rapidapi-key": API_KEY
+                        "authorization": `Bearer ${API_KEY}`
                     },
                     data: JSON.stringify({
                         "language_id": 89,
