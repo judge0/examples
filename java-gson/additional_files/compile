@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/local/openjdk13/bin/javac -classpath ".:gson-2.11.0.jar" Main.java
